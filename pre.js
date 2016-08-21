@@ -1,1 +1,1 @@
-var sidh = (function () {
+var rlwe = (function () {

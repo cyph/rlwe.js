@@ -5,7 +5,7 @@ function dataReturn (returnValue, result) {
 		return result;
 	}
 	else {
-		throw new Error('SIDH error: ' + returnValue);
+		throw new Error('R-LWE error: ' + returnValue);
 	}
 }
 
@@ -23,32 +23,27 @@ function dataFree (buffer) {
 }
 
 
-Module._sidhjs_init();
+Module._rlwejs_init();
 
 
-var sidh	= {
-	publicKeyLength: Module._sidhjs_public_key_bytes(),
-	privateKeyLength: Module._sidhjs_private_key_bytes(),
-	secretLength: Module._sidhjs_secret_bytes(),
+var rlwe	= {
+	publicKeyLength: Module._rlwejs_public_key_bytes(),
+	privateKeyLength: Module._rlwejs_private_key_bytes(),
+	secretLength: Module._rlwejs_secret_bytes(),
 
-	keyPair: function (isAlice) {
-		if (typeof isAlice !== 'boolean') {
-			throw 'Must specify whether this key pair is for Alice.';
-		}
-
-		var publicKeyBuffer		= Module._malloc(sidh.publicKeyLength);
-		var privateKeyBuffer	= Module._malloc(sidh.privateKeyLength);
+	aliceKeyPair: function () {
+		var publicKeyBuffer		= Module._malloc(rlwe.publicKeyLength);
+		var privateKeyBuffer	= Module._malloc(rlwe.privateKeyLength);
 
 		try {
-			var returnValue	= Module._sidhjs_keypair(
-				isAlice ? 1 : 0,
+			var returnValue	= Module._rlwejs_keypair_alice(
 				publicKeyBuffer,
 				privateKeyBuffer
 			);
 
 			return dataReturn(returnValue, {
-				publicKey: dataResult(publicKeyBuffer, sidh.publicKeyLength),
-				privateKey: dataResult(privateKeyBuffer, sidh.privateKeyLength)
+				publicKey: dataResult(publicKeyBuffer, rlwe.publicKeyLength),
+				privateKey: dataResult(privateKeyBuffer, rlwe.privateKeyLength)
 			});
 		}
 		finally {
@@ -57,16 +52,16 @@ var sidh	= {
 		}
 	},
 
-	secret: function (publicKey, privateKey) {
-		var publicKeyBuffer		= Module._malloc(sidh.publicKeyLength);
-		var privateKeyBuffer	= Module._malloc(sidh.privateKeyLength);
-		var secretBuffer		= Module._malloc(sidh.secretLength);
+	aliceSecret: function (publicKey, privateKey) {
+		var publicKeyBuffer		= Module._malloc(rlwe.publicKeyLength);
+		var privateKeyBuffer	= Module._malloc(rlwe.privateKeyLength);
+		var secretBuffer		= Module._malloc(rlwe.secretLength);
 
 		Module.writeArrayToMemory(publicKey, publicKeyBuffer);
 		Module.writeArrayToMemory(privateKey, privateKeyBuffer);
 
 		try {
-			var returnValue	= Module._sidhjs_secret(
+			var returnValue	= Module._rlwejs_secret_alice(
 				publicKeyBuffer,
 				privateKeyBuffer,
 				secretBuffer
@@ -74,7 +69,7 @@ var sidh	= {
 
 			return dataReturn(
 				returnValue,
-				dataResult(secretBuffer, sidh.secretLength)
+				dataResult(secretBuffer, rlwe.secretLength)
 			);
 		}
 		finally {
@@ -82,13 +77,42 @@ var sidh	= {
 			dataFree(privateKeyBuffer);
 			dataFree(secretBuffer);
 		}
+	},
+
+	bobSecret: function (alicePublicKey) {
+		var alicePublicKeyBuffer	= Module._malloc(rlwe.publicKeyLength);
+		var bobPublicKeyBuffer		= Module._malloc(rlwe.publicKeyLength);
+		var secretBuffer			= Module._malloc(rlwe.secretLength);
+
+		Module.writeArrayToMemory(
+			alicePublicKey,
+			alicePublicKeyBuffer
+		);
+
+		try {
+			var returnValue	= Module._rlwejs_secret_bob(
+				alicePublicKeyBuffer,
+				bobPublicKeyBuffer,
+				secretBuffer
+			);
+
+			return dataReturn(returnValue, {
+				publicKey: dataResult(bobPublicKeyBuffer, rlwe.publicKeyLength),
+				secret: dataResult(secretBuffer, rlwe.secretLength)
+			});
+		}
+		finally {
+			dataFree(alicePublicKeyBuffer);
+			dataFree(bobPublicKeyBuffer);
+			dataFree(secretBuffer);
+		}
 	}
 };
 
 
 
-return sidh;
+return rlwe;
 
 }());
 
-self.sidh	= sidh;
+self.rlwe	= rlwe;
