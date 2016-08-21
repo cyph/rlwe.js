@@ -18,7 +18,7 @@ The parameters are configured to 128-bit strength. (More specifically, the secur
 	const bob			= rlwe.bobSecret(aliceKeyPair.publicKey);
 	/* {publicKey: Uint8Array; secret: Uint8Array;} */
 
-	const aliceSecret	= rlwe.aliceSecret(bob.publicKey, alice.privateKey);
+	const aliceSecret	= rlwe.aliceSecret(bob.publicKey, aliceKeyPair.privateKey);
 	/* Uint8Array */
 
 	// bob.secret and aliceSecret are equal
