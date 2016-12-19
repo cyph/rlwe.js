@@ -12,16 +12,17 @@ The parameters are configured to 128-bit strength. (More specifically, the secur
 
 ## Example Usage
 
-	const aliceKeyPair	= rlwe.aliceKeyPair();
-	/* {publicKey: Uint8Array; privateKey: Uint8Array;} */
+	const aliceKeyPair /*: {privateKey: Uint8Array; publicKey: Uint8Array} */ =
+		rlwe.aliceKeyPair()
+	;
 
-	const bob			= rlwe.bobSecret(aliceKeyPair.publicKey);
-	/* {publicKey: Uint8Array; secret: Uint8Array;} */
+	const bob /*: {publicKey: Uint8Array; secret: Uint8Array} */ =
+		rlwe.bobSecret(aliceKeyPair.publicKey)
+	;
 
-	const aliceSecret	= rlwe.aliceSecret(bob.publicKey, aliceKeyPair.privateKey);
-	/* Uint8Array */
-
-	// bob.secret and aliceSecret are equal
+	const aliceSecret /*: Uint8Array */ =
+		rlwe.aliceSecret(bob.publicKey, aliceKeyPair.privateKey) // equal to bob.secret
+	;
 
 Note: This library only handles generating shared secrets; you'll need to handle key derivation
 and symmetric encryption from there.
