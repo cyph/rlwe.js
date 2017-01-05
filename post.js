@@ -5,7 +5,7 @@ function dataReturn (returnValue, result) {
 		return result;
 	}
 	else {
-		throw new Error('R-LWE error: ' + returnValue);
+		throw new Error('RLWE error: ' + returnValue);
 	}
 }
 
@@ -27,13 +27,18 @@ Module._rlwejs_init();
 
 
 var rlwe	= {
+	publicKeyBytes: Module._rlwejs_public_key_bytes(),
+	privateKeyBytes: Module._rlwejs_private_key_bytes(),
+	bytes: Module._rlwejs_secret_bytes(),
+
+	/* Backwards compatibility */
 	publicKeyLength: Module._rlwejs_public_key_bytes(),
 	privateKeyLength: Module._rlwejs_private_key_bytes(),
 	secretLength: Module._rlwejs_secret_bytes(),
 
 	aliceKeyPair: function () {
-		var publicKeyBuffer		= Module._malloc(rlwe.publicKeyLength);
-		var privateKeyBuffer	= Module._malloc(rlwe.privateKeyLength);
+		var publicKeyBuffer		= Module._malloc(rlwe.publicKeyBytes);
+		var privateKeyBuffer	= Module._malloc(rlwe.privateKeyBytes);
 
 		try {
 			var returnValue	= Module._rlwejs_keypair_alice(
@@ -42,8 +47,8 @@ var rlwe	= {
 			);
 
 			return dataReturn(returnValue, {
-				publicKey: dataResult(publicKeyBuffer, rlwe.publicKeyLength),
-				privateKey: dataResult(privateKeyBuffer, rlwe.privateKeyLength)
+				publicKey: dataResult(publicKeyBuffer, rlwe.publicKeyBytes),
+				privateKey: dataResult(privateKeyBuffer, rlwe.privateKeyBytes)
 			});
 		}
 		finally {
@@ -53,9 +58,9 @@ var rlwe	= {
 	},
 
 	aliceSecret: function (publicKey, privateKey) {
-		var publicKeyBuffer		= Module._malloc(rlwe.publicKeyLength);
-		var privateKeyBuffer	= Module._malloc(rlwe.privateKeyLength);
-		var secretBuffer		= Module._malloc(rlwe.secretLength);
+		var publicKeyBuffer		= Module._malloc(rlwe.publicKeyBytes);
+		var privateKeyBuffer	= Module._malloc(rlwe.privateKeyBytes);
+		var secretBuffer		= Module._malloc(rlwe.bytes);
 
 		Module.writeArrayToMemory(publicKey, publicKeyBuffer);
 		Module.writeArrayToMemory(privateKey, privateKeyBuffer);
@@ -69,7 +74,7 @@ var rlwe	= {
 
 			return dataReturn(
 				returnValue,
-				dataResult(secretBuffer, rlwe.secretLength)
+				dataResult(secretBuffer, rlwe.bytes)
 			);
 		}
 		finally {
@@ -80,9 +85,9 @@ var rlwe	= {
 	},
 
 	bobSecret: function (alicePublicKey) {
-		var alicePublicKeyBuffer	= Module._malloc(rlwe.publicKeyLength);
-		var bobPublicKeyBuffer		= Module._malloc(rlwe.publicKeyLength);
-		var secretBuffer			= Module._malloc(rlwe.secretLength);
+		var alicePublicKeyBuffer	= Module._malloc(rlwe.publicKeyBytes);
+		var bobPublicKeyBuffer		= Module._malloc(rlwe.publicKeyBytes);
+		var secretBuffer			= Module._malloc(rlwe.bytes);
 
 		Module.writeArrayToMemory(
 			alicePublicKey,
@@ -97,8 +102,8 @@ var rlwe	= {
 			);
 
 			return dataReturn(returnValue, {
-				publicKey: dataResult(bobPublicKeyBuffer, rlwe.publicKeyLength),
-				secret: dataResult(secretBuffer, rlwe.secretLength)
+				publicKey: dataResult(bobPublicKeyBuffer, rlwe.publicKeyBytes),
+				secret: dataResult(secretBuffer, rlwe.bytes)
 			});
 		}
 		finally {
@@ -115,4 +120,11 @@ return rlwe;
 
 }());
 
-self.rlwe	= rlwe;
+
+if (typeof module !== 'undefined' && module.exports) {
+	rlwe.rlwe		= rlwe;
+	module.exports	= rlwe;
+}
+else {
+	self.rlwe		= rlwe;
+}
