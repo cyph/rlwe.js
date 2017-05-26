@@ -2,7 +2,7 @@ all:
 	rm -rf dist LatticeCrypto_v1.0 libsodium 2> /dev/null
 	mkdir dist
 
-	git clone -b stable https://github.com/jedisct1/libsodium.git
+	git clone --depth 1 -b stable https://github.com/jedisct1/libsodium
 	cd libsodium ; emconfigure ./configure --enable-minimal --disable-shared
 
 	wget https://download.microsoft.com/download/7/3/3/733A6839-E6F3-4E6D-A91E-CC6E9F4EAACA/LatticeCrypto_v1.0.zip
