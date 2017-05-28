@@ -6367,11 +6367,11 @@ function _emscripten_get_global_libc() {
 function ___errno_location() {
  var $0 = 0, $1 = 0, label = 0, sp = 0;
  sp = STACKTOP;
- $0 = (___pthread_self_454()|0);
+ $0 = (___pthread_self_29()|0);
  $1 = ((($0)) + 64|0);
  return ($1|0);
 }
-function ___pthread_self_454() {
+function ___pthread_self_29() {
  var $0 = 0, label = 0, sp = 0;
  sp = STACKTOP;
  $0 = (_pthread_self()|0);
@@ -10961,11 +10961,6 @@ var rlwe	= {
 	publicKeyBytes: Module._rlwejs_public_key_bytes(),
 	privateKeyBytes: Module._rlwejs_private_key_bytes(),
 	bytes: Module._rlwejs_secret_bytes(),
-
-	/* Backwards compatibility */
-	publicKeyLength: Module._rlwejs_public_key_bytes(),
-	privateKeyLength: Module._rlwejs_private_key_bytes(),
-	secretLength: Module._rlwejs_secret_bytes(),
 
 	aliceKeyPair: function () {
 		var publicKeyBuffer		= Module._malloc(rlwe.publicKeyBytes);
