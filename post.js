@@ -31,11 +31,6 @@ var rlwe	= {
 	privateKeyBytes: Module._rlwejs_private_key_bytes(),
 	bytes: Module._rlwejs_secret_bytes(),
 
-	/* Backwards compatibility */
-	publicKeyLength: Module._rlwejs_public_key_bytes(),
-	privateKeyLength: Module._rlwejs_private_key_bytes(),
-	secretLength: Module._rlwejs_secret_bytes(),
-
 	aliceKeyPair: function () {
 		var publicKeyBuffer		= Module._malloc(rlwe.publicKeyBytes);
 		var privateKeyBuffer	= Module._malloc(rlwe.privateKeyBytes);
