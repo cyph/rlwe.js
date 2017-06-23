@@ -12,10 +12,10 @@ all:
 
 	bash -c ' \
 		args="$$(echo " \
-			--memory-init-file 0 \
+			-s SINGLE_FILE=1 \
 			-D_GENERIC_ -D__LINUX__ -D_X86_ \
 			-s TOTAL_MEMORY=16777216 -s TOTAL_STACK=8388608 \
-			-s NO_DYNAMIC_EXECUTION=1 -s RUNNING_JS_OPTS=1 -s ASSERTIONS=0 \
+			-s NO_DYNAMIC_EXECUTION=1 -s ASSERTIONS=0 \
 			-s AGGRESSIVE_VARIABLE_ELIMINATION=1 -s ALIASING_FUNCTION_POINTERS=1 \
 			-s FUNCTION_POINTER_ALIGNMENT=1 -s DISABLE_EXCEPTION_CATCHING=1 \
 			-s RESERVED_FUNCTION_POINTERS=8 -s NO_FILESYSTEM=1 \
@@ -37,16 +37,44 @@ all:
 				'"'"'_rlwejs_private_key_bytes'"'"', \
 				'"'"'_rlwejs_secret_bytes'"'"' \
 			]\" \
-			--pre-js pre.js --post-js post.js \
 		" | perl -pe "s/\s+/ /g" | perl -pe "s/\[ /\[/g" | perl -pe "s/ \]/\]/g")"; \
 		\
-		bash -c "emcc -O3 $$args -o dist/rlwe.js"; \
-		bash -c "emcc -O0 -g4 $$args -s DISABLE_EXCEPTION_CATCHING=0 -s ASSERTIONS=2 -o dist/rlwe.debug.js"; \
+		bash -c "emcc -Oz -s RUNNING_JS_OPTS=1 -s NO_EXIT_RUNTIME=1 $$args -o dist/rlwe.asm.js"; \
+		bash -c "emcc -O3 -s WASM=1 $$args -o dist/rlwe.wasm.js"; \
 	'
 
+	cp pre.js dist/rlwe.tmp.js
+	echo " \
+		var moduleReady; \
+		if (typeof WebAssembly !== 'undefined') { \
+	" >> dist/rlwe.tmp.js
+	cat dist/rlwe.wasm.js >> dist/rlwe.tmp.js
+	echo " \
+			moduleReady = new Promise(function (resolve) { \
+				var interval = setInterval(function () { \
+					if (!Module.usingWasm) { \
+						return; \
+					} \
+					clearInterval(interval); \
+					resolve(); \
+				}, 50); \
+			});\
+		} \
+		else { \
+	" >> dist/rlwe.tmp.js
+	cat dist/rlwe.asm.js >> dist/rlwe.tmp.js
+	echo " \
+			moduleReady = Promise.resolve(); \
+		} \
+	" >> dist/rlwe.tmp.js
+	cat post.js >> dist/rlwe.tmp.js
+
+	uglifyjs dist/rlwe.tmp.js -cmo dist/rlwe.js
+
+	sed -i 's|use asm||g' dist/rlwe.js
 	sed -i 's|require(|eval("require")(|g' dist/rlwe.js
 
-	rm -rf LatticeCrypto_v1.0 libsodium
+	rm -rf LatticeCrypto_v1.0 libsodium dist/rlwe.*.js
 
 clean:
 	rm -rf dist LatticeCrypto_v1.0 libsodium
