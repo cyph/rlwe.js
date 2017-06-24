@@ -23,9 +23,11 @@ function dataFree (buffer) {
 }
 
 
-var publicKeyBytes, privateKeyBytes, bytes;
+var Module, publicKeyBytes, privateKeyBytes, bytes;
 
 var initiated	= moduleReady.then(function () {
+	Module	= finalModule;
+
 	Module._rlwejs_init();
 
 	publicKeyBytes	= Module._rlwejs_public_key_bytes();
