@@ -1,6 +1,6 @@
 {
 	"name": "rlwe",
-	"version": "3.0.1",
+	"version": "3.0.2",
 	"description": "JavaScript wrapper for a WebAssembly build of RLWE",
 	"main": "dist/rlwe.js",
 	"types": "./rlwe.d.ts",

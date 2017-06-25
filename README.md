@@ -32,3 +32,16 @@ The parameters are configured to 128-bit strength. (More specifically, the secur
 
 Note: This library only handles generating shared secrets; you'll need to handle key derivation
 and symmetric encryption from there.
+
+## Changelog
+
+Breaking changes in major versions:
+
+3.0.0:
+
+* As part of upgrading from asm.js to WebAssembly (with asm.js included as a fallback),
+the API is fully asynchronous.
+
+2.0.0:
+
+* Removed some undocumented functions as part of minor API cleanup.
