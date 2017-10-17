@@ -45,19 +45,22 @@ all:
 
 	cp pre.js dist/rlwe.tmp.js
 	echo " \
-		var finalModule; \
-		var moduleReady = Promise.resolve().then(function () { \
+		var Module = {}; \
+		var _Module = Module; \
+		Module.ready = new Promise(function (resolve, reject) { \
+			var Module = _Module; \
+			Module.onAbort = reject; \
+			Module.onRuntimeInitialized = resolve; \
 	" >> dist/rlwe.tmp.js
 	cat dist/rlwe.wasm.js >> dist/rlwe.tmp.js
 	echo " \
-			return Module['wasmReady'].then(function () { \
-				finalModule = Module; \
-			});\
 		}).catch(function () { \
+			var Module = _Module; \
+			Module.onAbort = undefined; \
+			Module.onRuntimeInitialized = undefined; \
 	" >> dist/rlwe.tmp.js
 	cat dist/rlwe.asm.js >> dist/rlwe.tmp.js
 	echo " \
-			finalModule = Module; \
 		}); \
 	" >> dist/rlwe.tmp.js
 	cat post.js >> dist/rlwe.tmp.js
