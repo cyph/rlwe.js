@@ -29,6 +29,8 @@ all:
 			$$(ls LatticeCrypto_v1.0/*.c LatticeCrypto_v1.0/generic/*.c) \
 			rlwe.c \
 			-s EXPORTED_FUNCTIONS=\"[ \
+				'"'"'_free'"'"', \
+				'"'"'_malloc'"'"', \
 				'"'"'_rlwejs_init'"'"', \
 				'"'"'_rlwejs_keypair_alice'"'"', \
 				'"'"'_rlwejs_secret_alice'"'"', \
