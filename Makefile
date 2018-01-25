@@ -29,6 +29,9 @@ all:
 			$$(ls libsodium/src/libsodium/crypto_stream/chacha20/ref/*.c) \
 			$$(ls LatticeCrypto_v1.0/*.c LatticeCrypto_v1.0/generic/*.c) \
 			rlwe.c \
+			-s EXTRA_EXPORTED_RUNTIME_METHODS=\"[ \
+				'"'"'writeArrayToMemory'"'"' \
+			]\" \
 			-s EXPORTED_FUNCTIONS=\"[ \
 				'"'"'_free'"'"', \
 				'"'"'_malloc'"'"', \

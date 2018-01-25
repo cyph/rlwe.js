@@ -1,9 +1,5 @@
 ;
 
-function writeArrayToMemory (array, buffer) {
-	Module.HEAP8.set(array, buffer);
-}
-
 function dataReturn (returnValue, result) {
 	if (returnValue === 0) {
 		return result;
@@ -69,8 +65,8 @@ var rlwe	= {
 		var privateKeyBuffer	= Module._malloc(privateKeyBytes);
 		var secretBuffer		= Module._malloc(bytes);
 
-		writeArrayToMemory(publicKey, publicKeyBuffer);
-		writeArrayToMemory(privateKey, privateKeyBuffer);
+		Module.writeArrayToMemory(publicKey, publicKeyBuffer);
+		Module.writeArrayToMemory(privateKey, privateKeyBuffer);
 
 		try {
 			var returnValue	= Module._rlwejs_secret_alice(
@@ -96,7 +92,7 @@ var rlwe	= {
 		var bobPublicKeyBuffer		= Module._malloc(publicKeyBytes);
 		var secretBuffer			= Module._malloc(bytes);
 
-		writeArrayToMemory(
+		Module.writeArrayToMemory(
 			alicePublicKey,
 			alicePublicKeyBuffer
 		);
