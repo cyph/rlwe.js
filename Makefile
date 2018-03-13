@@ -56,7 +56,15 @@ all:
 		Module.ready = new Promise(function (resolve, reject) { \
 			var Module = _Module; \
 			Module.onAbort = reject; \
-			Module.onRuntimeInitialized = resolve; \
+			Module.onRuntimeInitialized = function () { \
+				try { \
+					Module._rlwejs_public_key_bytes(); \
+					resolve(); \
+				} \
+				catch (err) { \
+					reject(err); \
+				} \
+			}; \
 	" >> dist/rlwe.tmp.js
 	cat dist/rlwe.wasm.js >> dist/rlwe.tmp.js
 	echo " \
