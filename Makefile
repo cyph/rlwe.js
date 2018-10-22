@@ -79,7 +79,7 @@ all:
 	" >> dist/rlwe.tmp.js
 	cat post.js >> dist/rlwe.tmp.js
 
-	uglifyjs dist/rlwe.tmp.js -cmo dist/rlwe.js
+	terser dist/rlwe.tmp.js -cmo dist/rlwe.js
 
 	sed -i 's|use asm||g' dist/rlwe.js
 	sed -i 's|require(|eval("require")(|g' dist/rlwe.js
