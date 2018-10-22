@@ -20,6 +20,7 @@ all:
 			-s ALIASING_FUNCTION_POINTERS=1 \
 			-s DISABLE_EXCEPTION_CATCHING=1 \
 			-s NO_FILESYSTEM=1 \
+			-s ERROR_ON_UNDEFINED_SYMBOLS=0 \
 			-Ilibsodium/src/libsodium/include/sodium \
 			-ILatticeCrypto_v1.0 \
 			libsodium/src/libsodium/sodium/utils.c \
