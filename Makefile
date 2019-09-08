@@ -54,14 +54,13 @@ all:
 	cp pre.js dist/rlwe.tmp.js
 	echo " \
 		var Module = {}; \
-		var _Module = Module; \
 		Module.ready = new Promise(function (resolve, reject) { \
-			var Module = _Module; \
+			var Module = {}; \
 			Module.onAbort = reject; \
 			Module.onRuntimeInitialized = function () { \
 				try { \
 					Module._rlwejs_public_key_bytes(); \
-					resolve(); \
+					resolve(Module); \
 				} \
 				catch (err) { \
 					reject(err); \
@@ -71,12 +70,13 @@ all:
 	cat dist/rlwe.wasm.js >> dist/rlwe.tmp.js
 	echo " \
 		}).catch(function () { \
-			var Module = _Module; \
-			Module.onAbort = undefined; \
-			Module.onRuntimeInitialized = undefined; \
+			var Module = {}; \
 	" >> dist/rlwe.tmp.js
 	cat dist/rlwe.asm.js >> dist/rlwe.tmp.js
 	echo " \
+			return Module; \
+		}).then(function (m) { \
+			Object.keys(m).forEach(function (k) { Module[k] = m[k]; }); \
 		}); \
 	" >> dist/rlwe.tmp.js
 	cat post.js >> dist/rlwe.tmp.js
